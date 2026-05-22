@@ -48,6 +48,20 @@ app.get("/vehicle-data", async (req, res) => {
     res.json(data);
 });
 
+app.get("/generations", async (req, res) => {
+    const { brand, model } = req.query;
+
+    const generations = await VehicleData.distinct(
+        "generation",
+        {
+            brand,
+            model
+        }
+    );
+
+    res.json(generations);
+});
+
 app.listen(3001, () => {
     console.log("Server 3001");
 });

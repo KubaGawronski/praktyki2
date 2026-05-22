@@ -10,6 +10,9 @@ function HomePage() {
     const [selectedBrand, setSelectedBrand] = useState("");
     const [selectedModel, setSelectedModel] = useState("");
 
+    const [generations, setGenerations] = useState([]);
+    const [selectedGeneration, setSelectedGeneration] = useState("");
+
     const fetchBrands = async () => {
         try {
             const res = await axios.get(`${API_URL}/brands`);
@@ -32,6 +35,21 @@ function HomePage() {
         }
     };
 
+    const fetchGenerations = async (
+        brand: string,
+        model: string
+    ) => {
+        try {
+            const res = await axios.get(
+                `${API_URL}/generations?brand=${brand}&model=${model}`
+            );
+
+            setGenerations(res.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     useEffect(() => {
         fetchBrands();
     }, []);
@@ -43,6 +61,17 @@ function HomePage() {
 
         setSelectedModel("");
     }, [selectedBrand]);
+
+    useEffect(() => {
+        if (selectedBrand && selectedModel) {
+            fetchGenerations(
+                selectedBrand,
+                selectedModel
+            );
+        }
+
+        setSelectedGeneration("");
+    }, [selectedModel]);
 
     return (
         <div
@@ -129,6 +158,34 @@ function HomePage() {
                     ))}
                 </select>
 
+                <select
+                    value={selectedGeneration}
+                    onChange={(e) =>
+                        setSelectedGeneration(e.target.value)
+                    }
+                    style={{
+                        width: "100%",
+                        padding: "14px",
+                        borderRadius: "10px",
+                        border: "none",
+                        fontSize: "16px"
+                    }}
+                    disabled={!selectedModel}
+                >
+                    <option value="">
+                        Wybierz generację
+                    </option>
+
+                    {generations.map((generation, index) => (
+                        <option
+                            key={index}
+                            value={generation}
+                        >
+                            {generation}
+                        </option>
+                    ))}
+                </select>
+
                 {selectedBrand && (
                     <p>
                         Marka:
@@ -145,6 +202,16 @@ function HomePage() {
                         {" "}
                         <strong>
                             {selectedModel}
+                        </strong>
+                    </p>
+                )}
+
+                {selectedGeneration && (
+                    <p>
+                        Generacja:
+                        {" "}
+                        <strong>
+                            {selectedGeneration}
                         </strong>
                     </p>
                 )}

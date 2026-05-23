@@ -12,6 +12,8 @@ function HomePage() {
     const [selectedGeneration, setSelectedGeneration] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
     const [vehicleData, setVehicleData] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const fetchBrands = async () => {
         try {
@@ -51,13 +53,36 @@ function HomePage() {
     };
 
     const fetchVehicleData = async () => {
-        const res = await fetch(
-            `http://localhost:3001/vehicle-data?brand=${selectedBrand}&model=${selectedModel}&generation=${selectedGeneration}`
-        );
+        if (
+            !selectedBrand ||
+            !selectedModel ||
+            !selectedGeneration ||
+            !selectedCategory
+        ) {
+            setError("Uzupełnij wszystkie pola");
+            return;
+        }
 
-        const data = await res.json();
+        setError("");
+        setLoading(true);
 
-        setVehicleData(data);
+        try {
+            const res = await fetch(
+                `http://localhost:3001/vehicle-data?brand=${selectedBrand}&model=${selectedModel}&generation=${selectedGeneration}`
+            );
+
+            const data = await res.json();
+
+            setVehicleData(data);
+
+            if (!data) {
+                setError("Brak danych dla wybranego pojazdu");
+            }
+        } catch (err) {
+            setError("Błąd pobierania danych");
+        }
+
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -235,9 +260,9 @@ function HomePage() {
                         fontSize: "16px",
                         cursor: "pointer"
                     }}
-                    disabled={!selectedCategory}
+                    disabled={loading}
                 >
-                    Wyszukaj
+                    {loading ? "Ładowanie..." : "Wyszukaj"}
                 </button>
 
                 {selectedBrand && (
@@ -280,6 +305,18 @@ function HomePage() {
                     </p>
                 )}
             </div>
+            {error && (
+                <p
+                    style={{
+                        marginTop: "20px",
+                        color: "#ef4444",
+                        fontWeight: "bold",
+                        textAlign: "center"
+                    }}
+                >
+                    {error}
+                </p>
+            )}
             {vehicleData && (
                 <div
                     style={{

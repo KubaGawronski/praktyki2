@@ -295,45 +295,7 @@ function HomePage() {
                     Resetuj
                 </button>
 
-                {selectedBrand && (
-                    <p>
-                        Marka:
-                        {" "}
-                        <strong>
-                            {selectedBrand}
-                        </strong>
-                    </p>
-                )}
 
-                {selectedModel && (
-                    <p>
-                        Model:
-                        {" "}
-                        <strong>
-                            {selectedModel}
-                        </strong>
-                    </p>
-                )}
-
-                {selectedGeneration && (
-                    <p>
-                        Generacja:
-                        {" "}
-                        <strong>
-                            {selectedGeneration}
-                        </strong>
-                    </p>
-                )}
-
-                {selectedCategory && (
-                    <p>
-                        Kategoria:
-                        {" "}
-                        <strong>
-                            {selectedCategory}
-                        </strong>
-                    </p>
-                )}
             </div>
             {error && (
                 <p
@@ -425,7 +387,7 @@ function HomePage() {
                                 <p>
                                     <strong>Ciśnienie:</strong>
                                     {" "}
-                                    {vehicleData.tirePressure}
+                                    {vehicleData.tirePressure} bar
                                 </p>
                             </div>
                         )}
@@ -445,13 +407,13 @@ function HomePage() {
                                 <p>
                                     <strong>Przód:</strong>
                                     {" "}
-                                    {vehicleData.frontWipers}
+                                    {vehicleData.frontWipers} mm
                                 </p>
 
                                 <p>
                                     <strong>Tył:</strong>
                                     {" "}
-                                    {vehicleData.rearWiper}
+                                    {vehicleData.rearWiper} mm
                                 </p>
                             </div>
                         )}

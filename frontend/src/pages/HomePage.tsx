@@ -6,15 +6,11 @@ import { API_URL } from "../config/api";
 function HomePage() {
     const [brands, setBrands] = useState([]);
     const [models, setModels] = useState([]);
-
     const [selectedBrand, setSelectedBrand] = useState("");
     const [selectedModel, setSelectedModel] = useState("");
-
     const [generations, setGenerations] = useState([]);
     const [selectedGeneration, setSelectedGeneration] = useState("");
-
     const [selectedCategory, setSelectedCategory] = useState("");
-
     const [vehicleData, setVehicleData] = useState<any>(null);
 
     const fetchBrands = async () => {
@@ -290,52 +286,109 @@ function HomePage() {
                         marginTop: "30px",
                         backgroundColor: "#1e293b",
                         padding: "30px",
-                        borderRadius: "20px"
+                        borderRadius: "20px",
+                        boxShadow: "0 8px 20px rgba(0,0,0,0.3)"
                     }}
                 >
-                    <h2>
-                        Wyniki wyszukiwania
+                    <h2
+                        style={{
+                            marginTop: 0,
+                            marginBottom: "25px",
+                            textAlign: "center"
+                        }}
+                    >
+                        Wyniki wyszukiwania 🔍
                     </h2>
 
-                    {selectedCategory === "opony" && (
-                        <>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "20px"
+                        }}
+                    >
+                        <div
+                            style={{
+                                backgroundColor: "#0f172a",
+                                padding: "20px",
+                                borderRadius: "16px"
+                            }}
+                        >
+                            <h3>
+                                🚗 Pojazd
+                            </h3>
+
                             <p>
-                                Rozmiar opon:
+                                <strong>Marka:</strong>
                                 {" "}
-                                <strong>
+                                {selectedBrand}
+                            </p>
+
+                            <p>
+                                <strong>Model:</strong>
+                                {" "}
+                                {selectedModel}
+                            </p>
+
+                            <p>
+                                <strong>Generacja:</strong>
+                                {" "}
+                                {selectedGeneration}
+                            </p>
+                        </div>
+
+                        {selectedCategory === "opony" && (
+                            <div
+                                style={{
+                                    backgroundColor: "#0f172a",
+                                    padding: "20px",
+                                    borderRadius: "16px"
+                                }}
+                            >
+                                <h3>
+                                    🛞 Opony
+                                </h3>
+
+                                <p>
+                                    <strong>Rozmiar:</strong>
+                                    {" "}
                                     {vehicleData.tireSize}
-                                </strong>
-                            </p>
+                                </p>
 
-                            <p>
-                                Ciśnienie:
-                                {" "}
-                                <strong>
+                                <p>
+                                    <strong>Ciśnienie:</strong>
+                                    {" "}
                                     {vehicleData.tirePressure}
-                                </strong>
-                            </p>
-                        </>
-                    )}
+                                </p>
+                            </div>
+                        )}
 
-                    {selectedCategory === "wycieraczki" && (
-                        <>
-                            <p>
-                                Przód:
-                                {" "}
-                                <strong>
+                        {selectedCategory === "wycieraczki" && (
+                            <div
+                                style={{
+                                    backgroundColor: "#0f172a",
+                                    padding: "20px",
+                                    borderRadius: "16px"
+                                }}
+                            >
+                                <h3>
+                                    🧼 Wycieraczki
+                                </h3>
+
+                                <p>
+                                    <strong>Przód:</strong>
+                                    {" "}
                                     {vehicleData.frontWipers}
-                                </strong>
-                            </p>
+                                </p>
 
-                            <p>
-                                Tył:
-                                {" "}
-                                <strong>
+                                <p>
+                                    <strong>Tył:</strong>
+                                    {" "}
                                     {vehicleData.rearWiper}
-                                </strong>
-                            </p>
-                        </>
-                    )}
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </div>

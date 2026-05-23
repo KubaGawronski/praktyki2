@@ -85,6 +85,20 @@ function HomePage() {
         setLoading(false);
     };
 
+    const resetForm = () => {
+        setSelectedBrand("");
+        setSelectedModel("");
+        setSelectedGeneration("");
+        setSelectedCategory("");
+
+        setModels([]);
+        setGenerations([]);
+
+        setVehicleData(null);
+
+        setError("");
+    };
+
     useEffect(() => {
         fetchBrands();
     }, []);
@@ -263,6 +277,22 @@ function HomePage() {
                     disabled={loading}
                 >
                     {loading ? "Ładowanie..." : "Wyszukaj"}
+                </button>
+
+                <button
+                    onClick={resetForm}
+                    style={{
+                        width: "100%",
+                        padding: "14px",
+                        borderRadius: "10px",
+                        border: "none",
+                        backgroundColor: "#ef4444",
+                        color: "white",
+                        fontSize: "16px",
+                        cursor: "pointer"
+                    }}
+                >
+                    Resetuj
                 </button>
 
                 {selectedBrand && (

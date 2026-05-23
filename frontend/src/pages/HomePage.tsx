@@ -13,6 +13,8 @@ function HomePage() {
     const [generations, setGenerations] = useState([]);
     const [selectedGeneration, setSelectedGeneration] = useState("");
 
+    const [selectedCategory, setSelectedCategory] = useState("");
+
     const fetchBrands = async () => {
         try {
             const res = await axios.get(`${API_URL}/brands`);
@@ -186,6 +188,33 @@ function HomePage() {
                     ))}
                 </select>
 
+                <select
+                    value={selectedCategory}
+                    onChange={(e) =>
+                        setSelectedCategory(e.target.value)
+                    }
+                    style={{
+                        width: "100%",
+                        padding: "14px",
+                        borderRadius: "10px",
+                        border: "none",
+                        fontSize: "16px"
+                    }}
+                    disabled={!selectedGeneration}
+                >
+                    <option value="">
+                        Wybierz kategorię
+                    </option>
+
+                    <option value="opony">
+                        Opony
+                    </option>
+
+                    <option value="wycieraczki">
+                        Wycieraczki
+                    </option>
+                </select>
+
                 {selectedBrand && (
                     <p>
                         Marka:
@@ -212,6 +241,16 @@ function HomePage() {
                         {" "}
                         <strong>
                             {selectedGeneration}
+                        </strong>
+                    </p>
+                )}
+
+                {selectedCategory && (
+                    <p>
+                        Kategoria:
+                        {" "}
+                        <strong>
+                            {selectedCategory}
                         </strong>
                     </p>
                 )}

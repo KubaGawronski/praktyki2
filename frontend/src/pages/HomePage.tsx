@@ -15,6 +15,8 @@ function HomePage() {
 
     const [selectedCategory, setSelectedCategory] = useState("");
 
+    const [vehicleData, setVehicleData] = useState<any>(null);
+
     const fetchBrands = async () => {
         try {
             const res = await axios.get(`${API_URL}/brands`);
@@ -50,6 +52,16 @@ function HomePage() {
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const fetchVehicleData = async () => {
+        const res = await fetch(
+            `http://localhost:3001/vehicle-data?brand=${selectedBrand}&model=${selectedModel}&generation=${selectedGeneration}`
+        );
+
+        const data = await res.json();
+
+        setVehicleData(data);
     };
 
     useEffect(() => {
@@ -215,6 +227,23 @@ function HomePage() {
                     </option>
                 </select>
 
+                <button
+                    onClick={fetchVehicleData}
+                    style={{
+                        width: "100%",
+                        padding: "14px",
+                        borderRadius: "10px",
+                        border: "none",
+                        backgroundColor: "#2563eb",
+                        color: "white",
+                        fontSize: "16px",
+                        cursor: "pointer"
+                    }}
+                    disabled={!selectedCategory}
+                >
+                    Wyszukaj
+                </button>
+
                 {selectedBrand && (
                     <p>
                         Marka:
@@ -255,6 +284,60 @@ function HomePage() {
                     </p>
                 )}
             </div>
+            {vehicleData && (
+                <div
+                    style={{
+                        marginTop: "30px",
+                        backgroundColor: "#1e293b",
+                        padding: "30px",
+                        borderRadius: "20px"
+                    }}
+                >
+                    <h2>
+                        Wyniki wyszukiwania
+                    </h2>
+
+                    {selectedCategory === "opony" && (
+                        <>
+                            <p>
+                                Rozmiar opon:
+                                {" "}
+                                <strong>
+                                    {vehicleData.tireSize}
+                                </strong>
+                            </p>
+
+                            <p>
+                                Ciśnienie:
+                                {" "}
+                                <strong>
+                                    {vehicleData.tirePressure}
+                                </strong>
+                            </p>
+                        </>
+                    )}
+
+                    {selectedCategory === "wycieraczki" && (
+                        <>
+                            <p>
+                                Przód:
+                                {" "}
+                                <strong>
+                                    {vehicleData.frontWipers}
+                                </strong>
+                            </p>
+
+                            <p>
+                                Tył:
+                                {" "}
+                                <strong>
+                                    {vehicleData.rearWiper}
+                                </strong>
+                            </p>
+                        </>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

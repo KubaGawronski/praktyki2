@@ -62,6 +62,63 @@ app.get("/generations", async (req, res) => {
     res.json(generations);
 });
 
+app.post("/vehicle-data", async (req, res) => {
+    try {
+        const {
+            brand,
+            model,
+            generation,
+            tireSize,
+            tirePressure,
+            frontWipers,
+            rearWiper
+        } = req.body;
+
+        const newVehicle = new VehicleData({
+            brand,
+            model,
+            generation,
+            tireSize,
+            tirePressure,
+            frontWipers,
+            rearWiper
+        });
+
+        await newVehicle.save();
+
+        const brandExists = await Brand.findOne({
+            name: brand
+        });
+
+        if (!brandExists) {
+            await Brand.create({
+                name: brand
+            });
+        }
+
+        const modelExists = await Model.findOne({
+            brand,
+            name: model
+        });
+
+        if (!modelExists) {
+            await Model.create({
+                brand,
+                name: model
+            });
+        }
+
+        res.status(201).json({
+            message: "Pojazd dodany"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Błąd dodawania pojazdu"
+        });
+    }
+});
+
 app.listen(3001, () => {
     console.log("Server 3001");
 });

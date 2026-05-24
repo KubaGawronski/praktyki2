@@ -11,6 +11,7 @@ function HomePage() {
     const [generations, setGenerations] = useState([]);
     const [selectedGeneration, setSelectedGeneration] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [searchedCategory, setSearchedCategory] = useState("");
     const [vehicleData, setVehicleData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -64,6 +65,7 @@ function HomePage() {
         }
 
         setError("");
+        setSearchedCategory(selectedCategory);
         setLoading(true);
 
         try {
@@ -312,18 +314,23 @@ function HomePage() {
             {vehicleData && (
                 <div
                     style={{
-                        marginTop: "30px",
+                        marginTop: "40px",
+                        maxWidth: "900px",
+                        marginLeft: "auto",
+                        marginRight: "auto",
                         backgroundColor: "#1e293b",
-                        padding: "30px",
-                        borderRadius: "20px",
-                        boxShadow: "0 8px 20px rgba(0,0,0,0.3)"
+                        padding: "35px",
+                        borderRadius: "24px",
+                        border: "1px solid #334155",
+                        boxShadow: "0 10px 30px rgba(0,0,0,0.35)"
                     }}
                 >
                     <h2
                         style={{
                             marginTop: 0,
-                            marginBottom: "25px",
-                            textAlign: "center"
+                            marginBottom: "35px",
+                            textAlign: "center",
+                            fontSize: "34px"
                         }}
                     >
                         Wyniki wyszukiwania 🔍
@@ -331,50 +338,39 @@ function HomePage() {
 
                     <div
                         style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "20px"
+                            display: "grid",
+                            gridTemplateColumns:
+                                "repeat(auto-fit, minmax(260px, 1fr))",
+                            gap: "24px"
                         }}
                     >
-                        <div
-                            style={{
-                                backgroundColor: "#0f172a",
-                                padding: "20px",
-                                borderRadius: "16px"
-                            }}
-                        >
-                            <h3>
+                        <div style={cardStyle}>
+                            <h3 style={titleStyle}>
                                 🚗 Pojazd
                             </h3>
 
                             <p>
                                 <strong>Marka:</strong>
                                 {" "}
-                                {selectedBrand}
+                                {vehicleData.brand}
                             </p>
 
                             <p>
                                 <strong>Model:</strong>
                                 {" "}
-                                {selectedModel}
+                                {vehicleData.model}
                             </p>
 
                             <p>
                                 <strong>Generacja:</strong>
                                 {" "}
-                                {selectedGeneration}
+                                {vehicleData.generation}
                             </p>
                         </div>
 
-                        {selectedCategory === "opony" && (
-                            <div
-                                style={{
-                                    backgroundColor: "#0f172a",
-                                    padding: "20px",
-                                    borderRadius: "16px"
-                                }}
-                            >
-                                <h3>
+                        {searchedCategory === "opony" && (
+                            <div style={cardStyle}>
+                                <h3 style={titleStyle}>
                                     🛞 Opony
                                 </h3>
 
@@ -392,15 +388,9 @@ function HomePage() {
                             </div>
                         )}
 
-                        {selectedCategory === "wycieraczki" && (
-                            <div
-                                style={{
-                                    backgroundColor: "#0f172a",
-                                    padding: "20px",
-                                    borderRadius: "16px"
-                                }}
-                            >
-                                <h3>
+                        {searchedCategory === "wycieraczki" && (
+                            <div style={cardStyle}>
+                                <h3 style={titleStyle}>
                                     🧼 Wycieraczki
                                 </h3>
 
@@ -423,5 +413,20 @@ function HomePage() {
         </div>
     );
 }
+
+const cardStyle: React.CSSProperties = {
+    backgroundColor: "#0f172a",
+    padding: "24px",
+    borderRadius: "18px",
+    border: "1px solid #334155",
+    fontSize: "17px",
+    lineHeight: "1.8"
+};
+
+const titleStyle: React.CSSProperties = {
+    marginTop: 0,
+    marginBottom: "20px",
+    fontSize: "24px"
+};
 
 export default HomePage;

@@ -132,6 +132,41 @@ app.get("/vehicle-data/all", async (req, res) => {
     }
 });
 
+app.delete("/vehicle-data/:id", async (req, res) => {
+    try {
+        await VehicleData.findByIdAndDelete(
+            req.params.id
+        );
+
+        res.json({
+            message: "Pojazd usunięty"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Błąd usuwania pojazdu"
+        });
+    }
+});
+
+app.put("/vehicle-data/:id", async (req, res) => {
+    try {
+        const updatedVehicle =
+            await VehicleData.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                { new: true }
+            );
+
+        res.json(updatedVehicle);
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Błąd edycji pojazdu"
+        });
+    }
+});
+
 app.listen(3001, () => {
     console.log("Server 3001");
 });

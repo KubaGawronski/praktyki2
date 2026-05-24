@@ -13,6 +13,7 @@ function AdminPage() {
     const [vehicles, setVehicles] = useState<any[]>([]);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
+    const [editingId, setEditingId] = useState("");
 
     const addVehicle = async () => {
         if (
@@ -58,6 +59,86 @@ function AdminPage() {
 
         } catch (err) {
             setMessage("Błąd dodawania pojazdu");
+            setMessageType("error");
+        }
+    };
+
+    const deleteVehicle = async (id: string) => {
+        const confirmDelete = window.confirm(
+            "Czy na pewno chcesz usunąć pojazd?"
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            await axios.delete(
+                `${API_URL}/vehicle-data/${id}`
+            );
+
+            setMessage("Pojazd usunięty");
+            setMessageType("success");
+
+            fetchVehicles();
+
+        } catch (err) {
+            setMessage("Błąd usuwania pojazdu");
+            setMessageType("error");
+        }
+    };
+
+    const editVehicle = (vehicle: any) => {
+        setEditingId(vehicle._id);
+
+        setBrand(vehicle.brand);
+        setModel(vehicle.model);
+        setGeneration(vehicle.generation);
+
+        setTireSize(vehicle.tireSize);
+        setTirePressure(vehicle.tirePressure);
+
+        setFrontWipers(vehicle.frontWipers);
+        setRearWiper(vehicle.rearWiper);
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    };
+
+    const updateVehicle = async () => {
+        try {
+            await axios.put(
+                `${API_URL}/vehicle-data/${editingId}`,
+                {
+                    brand,
+                    model,
+                    generation,
+                    tireSize,
+                    tirePressure,
+                    frontWipers,
+                    rearWiper
+                }
+            );
+
+            setMessage("Pojazd zaktualizowany");
+            setMessageType("success");
+
+            fetchVehicles();
+
+            setEditingId("");
+
+            setBrand("");
+            setModel("");
+            setGeneration("");
+            setTireSize("");
+            setTirePressure("");
+            setFrontWipers("");
+            setRearWiper("");
+
+        } catch (err) {
+            setMessage("Błąd edycji pojazdu");
             setMessageType("error");
         }
     };
@@ -190,9 +271,15 @@ function AdminPage() {
                             fontSize: "16px",
                             cursor: "pointer"
                         }}
-                        onClick={addVehicle}
+                        onClick={
+                            editingId
+                                ? updateVehicle
+                                : addVehicle
+                        }
                     >
-                        Dodaj pojazd
+                        {editingId
+                            ? "Edytuj pojazd"
+                            : "Dodaj pojazd"}
                     </button>
                 </div>
             </div>
@@ -328,6 +415,42 @@ function AdminPage() {
                                 {" "}
                                 {vehicle.rearWiper} mm
                             </p>
+                            <button
+                                onClick={() =>
+                                    deleteVehicle(vehicle._id)
+                                }
+                                style={{
+                                    marginTop: "15px",
+                                    width: "100%",
+                                    padding: "12px",
+                                    borderRadius: "10px",
+                                    border: "none",
+                                    backgroundColor: "#ef4444",
+                                    color: "white",
+                                    fontSize: "16px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                Usuń pojazd
+                            </button>
+                            <button
+                                onClick={() =>
+                                    editVehicle(vehicle)
+                                }
+                                style={{
+                                    marginTop: "10px",
+                                    width: "100%",
+                                    padding: "12px",
+                                    borderRadius: "10px",
+                                    border: "none",
+                                    backgroundColor: "#f59e0b",
+                                    color: "white",
+                                    fontSize: "16px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                Edytuj pojazd
+                            </button>
                         </div>
                     ))}
                 </div>

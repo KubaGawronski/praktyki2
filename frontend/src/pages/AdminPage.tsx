@@ -11,8 +11,24 @@ function AdminPage() {
     const [frontWipers, setFrontWipers] = useState("");
     const [rearWiper, setRearWiper] = useState("");
     const [vehicles, setVehicles] = useState<any[]>([]);
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("");
 
     const addVehicle = async () => {
+        if (
+            !brand ||
+            !model ||
+            !generation ||
+            !tireSize ||
+            !tirePressure ||
+            !frontWipers ||
+            !rearWiper
+        ) {
+            setMessage("Uzupełnij wszystkie pola");
+            setMessageType("error");
+            return;
+        }
+
         try {
             await axios.post(
                 `${API_URL}/vehicle-data`,
@@ -27,8 +43,11 @@ function AdminPage() {
                 }
             );
 
-            alert("Pojazd dodany 🚗");
+            setMessage("Pojazd został dodany 🚗");
+            setMessageType("success");
+
             fetchVehicles();
+
             setBrand("");
             setModel("");
             setGeneration("");
@@ -38,7 +57,8 @@ function AdminPage() {
             setRearWiper("");
 
         } catch (err) {
-            alert("Błąd dodawania pojazdu");
+            setMessage("Błąd dodawania pojazdu");
+            setMessageType("error");
         }
     };
 
@@ -141,7 +161,7 @@ function AdminPage() {
                     />
 
                     <input
-                        placeholder="Wycieraczki przód (mm)"
+                        placeholder="Wycieraczki przód (mm/mm)"
                         value={frontWipers}
                         onChange={(e) =>
                             setFrontWipers(e.target.value)
@@ -176,6 +196,23 @@ function AdminPage() {
                     </button>
                 </div>
             </div>
+
+            {message && (
+                <p
+                    style={{
+                        marginTop: "10px",
+                        textAlign: "center",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color:
+                            messageType === "error"
+                                ? "#ef4444"
+                                : "#22c55e"
+                    }}
+                >
+                    {message}
+                </p>
+            )}
 
             <div
                 style={{

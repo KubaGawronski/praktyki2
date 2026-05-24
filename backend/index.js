@@ -119,6 +119,19 @@ app.post("/vehicle-data", async (req, res) => {
     }
 });
 
+app.get("/vehicle-data/all", async (req, res) => {
+    try {
+        const vehicles = await VehicleData.find();
+
+        res.json(vehicles);
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Błąd pobierania pojazdów"
+        });
+    }
+});
+
 app.listen(3001, () => {
     console.log("Server 3001");
 });

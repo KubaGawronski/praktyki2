@@ -108,6 +108,19 @@ function AdminPage() {
     };
 
     const updateVehicle = async () => {
+        if (
+            !brand ||
+            !model ||
+            !generation ||
+            !tireSize ||
+            !tirePressure ||
+            !frontWipers ||
+            !rearWiper
+        ) {
+            setMessage("Uzupełnij wszystkie pola");
+            setMessageType("error");
+            return;
+        }
         try {
             await axios.put(
                 `${API_URL}/vehicle-data/${editingId}`,
@@ -143,6 +156,20 @@ function AdminPage() {
         }
     };
 
+    const cancelEditing = () => {
+        setEditingId("");
+
+        setBrand("");
+        setModel("");
+        setGeneration("");
+        setTireSize("");
+        setTirePressure("");
+        setFrontWipers("");
+        setRearWiper("");
+
+        setMessage("");
+    };
+
     const fetchVehicles = async () => {
         try {
             const res = await axios.get(
@@ -175,7 +202,9 @@ function AdminPage() {
                     margin: "0 auto",
                     backgroundColor: "#1e293b",
                     padding: "40px",
-                    borderRadius: "20px"
+                    borderRadius: "20px",
+                    border: "1px solid #334155",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.35)"
                 }}
             >
                 <h1
@@ -269,7 +298,10 @@ function AdminPage() {
                             backgroundColor: "#2563eb",
                             color: "white",
                             fontSize: "16px",
-                            cursor: "pointer"
+                            cursor: "pointer",
+                            transition: "0.2s",
+                            fontWeight: "bold",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
                         }}
                         onClick={
                             editingId
@@ -281,6 +313,25 @@ function AdminPage() {
                             ? "Edytuj pojazd"
                             : "Dodaj pojazd"}
                     </button>
+
+                    {editingId && (
+                        <button
+                            onClick={cancelEditing}
+                            style={{
+                                width: "100%",
+                                padding: "14px",
+                                borderRadius: "10px",
+                                border: "none",
+                                backgroundColor: "#475569",
+                                color: "white",
+                                fontSize: "16px",
+                                cursor: "pointer",
+                                fontWeight: "bold"
+                            }}
+                        >
+                            Anuluj
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -333,10 +384,12 @@ function AdminPage() {
                         <div
                             key={vehicle._id}
                             style={{
-                                backgroundColor: "#0f172a",
-                                padding: "28px",
-                                borderRadius: "18px",
-                                border: "1px solid #334155"
+                                background:
+                                    "linear-gradient(145deg, #0f172a, #111827)",
+                                padding: "30px",
+                                borderRadius: "22px",
+                                border: "1px solid #334155",
+                                boxShadow: "0 6px 18px rgba(0,0,0,0.3)"
                             }}
                         >
                             <p
@@ -428,7 +481,10 @@ function AdminPage() {
                                     backgroundColor: "#ef4444",
                                     color: "white",
                                     fontSize: "16px",
-                                    cursor: "pointer"
+                                    cursor: "pointer",
+                                    transition: "0.2s",
+                                    fontWeight: "bold",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
                                 }}
                             >
                                 Usuń pojazd
@@ -446,7 +502,10 @@ function AdminPage() {
                                     backgroundColor: "#f59e0b",
                                     color: "white",
                                     fontSize: "16px",
-                                    cursor: "pointer"
+                                    cursor: "pointer",
+                                    transition: "0.2s",
+                                    fontWeight: "bold",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
                                 }}
                             >
                                 Edytuj pojazd
@@ -463,7 +522,8 @@ const inputStyle: React.CSSProperties = {
     width: "100%",
     padding: "14px",
     borderRadius: "10px",
-    border: "none",
+    outline: "none",
+    border: "1px solid #334155",
     fontSize: "16px",
     boxSizing: "border-box",
     backgroundColor: "#0f172a",

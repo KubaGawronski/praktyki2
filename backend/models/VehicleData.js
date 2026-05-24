@@ -5,17 +5,11 @@ const VehicleDataSchema = new mongoose.Schema({
     model: String,
     generation: String,
 
-    tires: {
-        width: Number,
-        profile: Number,
-        diameter: Number,
-        class: String
-    },
+    tireSize: String,
+    tirePressure: Number,
 
-    wipers: {
-        front: Number,
-        rear: Number
-    }
+    frontWipers: String,
+    rearWiper: Number
 });
 
 module.exports = mongoose.model(

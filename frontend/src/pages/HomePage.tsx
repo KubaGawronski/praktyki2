@@ -15,6 +15,7 @@ function HomePage() {
     const [vehicleData, setVehicleData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [searchSpecificModel, setSearchSpecificModel] = useState(true);
 
     const fetchBrands = async () => {
         try {
@@ -56,9 +57,14 @@ function HomePage() {
     const fetchVehicleData = async () => {
         if (
             !selectedBrand ||
-            !selectedModel ||
-            !selectedGeneration ||
-            !selectedCategory
+            !selectedCategory ||
+            (
+                searchSpecificModel &&
+                (
+                    !selectedModel ||
+                    !selectedGeneration
+                )
+            )
         ) {
             setError("Uzupełnij wszystkie pola");
             return;
@@ -66,18 +72,30 @@ function HomePage() {
 
         setError("");
         setSearchedCategory(selectedCategory);
+        setVehicleData(null);
         setLoading(true);
 
         try {
-            const res = await fetch(
-                `http://localhost:3001/vehicle-data?brand=${selectedBrand}&model=${selectedModel}&generation=${selectedGeneration}`
-            );
+            let res;
+
+            if (searchSpecificModel) {
+                res = await fetch(
+                    `${API_URL}/vehicle-data?brand=${selectedBrand}&model=${selectedModel}&generation=${selectedGeneration}`
+                );
+            } else {
+                res = await fetch(
+                    `${API_URL}/vehicle-data/brand?brand=${selectedBrand}`
+                );
+            }
 
             const data = await res.json();
 
             setVehicleData(data);
 
-            if (!data) {
+            if (
+                !data ||
+                (Array.isArray(data) && data.length === 0)
+            ) {
                 setError("Brak danych dla wybranego pojazdu");
             }
         } catch (err) {
@@ -99,6 +117,8 @@ function HomePage() {
         setVehicleData(null);
 
         setError("");
+
+        setSearchSpecificModel(true);
     };
 
     useEffect(() => {
@@ -123,6 +143,13 @@ function HomePage() {
 
         setSelectedGeneration("");
     }, [selectedModel]);
+
+    useEffect(() => {
+        if (!searchSpecificModel) {
+            setSelectedModel("");
+            setSelectedGeneration("");
+        }
+    }, [searchSpecificModel]);
 
     return (
         <div
@@ -181,62 +208,82 @@ function HomePage() {
                     ))}
                 </select>
 
-                <select
-                    value={selectedModel}
-                    onChange={(e) =>
-                        setSelectedModel(e.target.value)
-                    }
+                <label
                     style={{
-                        width: "100%",
-                        padding: "14px",
-                        borderRadius: "10px",
-                        border: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
                         fontSize: "16px"
                     }}
-                    disabled={!selectedBrand}
                 >
-                    <option value="">
-                        Wybierz model
-                    </option>
+                    <input
+                        type="checkbox"
+                        checked={searchSpecificModel}
+                        onChange={(e) =>
+                            setSearchSpecificModel(e.target.checked)
+                        }
+                    />
 
-                    {models.map((model: any) => (
-                        <option
-                            key={model._id}
-                            value={model.name}
-                        >
-                            {model.name}
+                    Wyszukaj konkretny model
+                </label>
+                {searchSpecificModel && (
+                    <select
+                        value={selectedModel}
+                        onChange={(e) =>
+                            setSelectedModel(e.target.value)
+                        }
+                        style={{
+                            width: "100%",
+                            padding: "14px",
+                            borderRadius: "10px",
+                            border: "none",
+                            fontSize: "16px"
+                        }}
+                        disabled={!selectedBrand}
+                    >
+                        <option value="">
+                            Wybierz model
                         </option>
-                    ))}
-                </select>
 
-                <select
-                    value={selectedGeneration}
-                    onChange={(e) =>
-                        setSelectedGeneration(e.target.value)
-                    }
-                    style={{
-                        width: "100%",
-                        padding: "14px",
-                        borderRadius: "10px",
-                        border: "none",
-                        fontSize: "16px"
-                    }}
-                    disabled={!selectedModel}
-                >
-                    <option value="">
-                        Wybierz generację
-                    </option>
-
-                    {generations.map((generation, index) => (
-                        <option
-                            key={index}
-                            value={generation}
-                        >
-                            {generation}
+                        {models.map((model: any) => (
+                            <option
+                                key={model._id}
+                                value={model.name}
+                            >
+                                {model.name}
+                            </option>
+                        ))}
+                    </select>
+                )}
+                {searchSpecificModel && (
+                    <select
+                        value={selectedGeneration}
+                        onChange={(e) =>
+                            setSelectedGeneration(e.target.value)
+                        }
+                        style={{
+                            width: "100%",
+                            padding: "14px",
+                            borderRadius: "10px",
+                            border: "none",
+                            fontSize: "16px"
+                        }}
+                        disabled={!selectedModel}
+                    >
+                        <option value="">
+                            Wybierz generację
                         </option>
-                    ))}
-                </select>
 
+                        {generations.map((generation, index) => (
+                            <option
+                                key={index}
+                                value={generation}
+                            >
+                                {generation}
+                            </option>
+                        ))}
+                    </select>
+                )}
                 <select
                     value={selectedCategory}
                     onChange={(e) =>
@@ -249,7 +296,13 @@ function HomePage() {
                         border: "none",
                         fontSize: "16px"
                     }}
-                    disabled={!selectedGeneration}
+                    disabled={
+                        !selectedBrand ||
+                        (
+                            searchSpecificModel &&
+                            !selectedGeneration
+                        )
+                    }
                 >
                     <option value="">
                         Wybierz kategorię
@@ -312,103 +365,164 @@ function HomePage() {
                 </p>
             )}
             {vehicleData && (
-                <div
-                    style={{
-                        marginTop: "40px",
-                        maxWidth: "900px",
-                        marginLeft: "auto",
-                        marginRight: "auto",
-                        backgroundColor: "#1e293b",
-                        padding: "35px",
-                        borderRadius: "24px",
-                        border: "1px solid #334155",
-                        boxShadow: "0 10px 30px rgba(0,0,0,0.35)"
-                    }}
-                >
-                    <h2
-                        style={{
-                            marginTop: 0,
-                            marginBottom: "35px",
-                            textAlign: "center",
-                            fontSize: "34px"
-                        }}
-                    >
-                        Wyniki wyszukiwania 🔍
-                    </h2>
+                searchSpecificModel ? (
 
                     <div
                         style={{
+                            marginTop: "40px",
+                            maxWidth: "900px",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            backgroundColor: "#1e293b",
+                            padding: "35px",
+                            borderRadius: "24px",
+                            border: "1px solid #334155",
+                            boxShadow: "0 10px 30px rgba(0,0,0,0.35)"
+                        }}
+                    >
+                        <h2
+                            style={{
+                                marginTop: 0,
+                                marginBottom: "35px",
+                                textAlign: "center",
+                                fontSize: "34px"
+                            }}
+                        >
+                            Wyniki wyszukiwania 🔍
+                        </h2>
+
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns:
+                                    "repeat(auto-fit, minmax(260px, 1fr))",
+                                gap: "24px"
+                            }}
+                        >
+                            <div style={cardStyle}>
+                                <h3 style={titleStyle}>
+                                    🚗 Pojazd
+                                </h3>
+
+                                <p>
+                                    <strong>Marka:</strong>{" "}
+                                    {vehicleData.brand}
+                                </p>
+
+                                <p>
+                                    <strong>Model:</strong>{" "}
+                                    {vehicleData.model}
+                                </p>
+
+                                <p>
+                                    <strong>Generacja:</strong>{" "}
+                                    {vehicleData.generation}
+                                </p>
+                            </div>
+
+                            {searchedCategory === "opony" && (
+                                <div style={cardStyle}>
+                                    <h3 style={titleStyle}>
+                                        🛞 Opony
+                                    </h3>
+
+                                    <p>
+                                        <strong>Rozmiar:</strong>{" "}
+                                        {vehicleData.tireSize}
+                                    </p>
+
+                                    <p>
+                                        <strong>Ciśnienie:</strong>{" "}
+                                        {vehicleData.tirePressure} bar
+                                    </p>
+                                </div>
+                            )}
+
+                            {searchedCategory === "wycieraczki" && (
+                                <div style={cardStyle}>
+                                    <h3 style={titleStyle}>
+                                        🧼 Wycieraczki
+                                    </h3>
+
+                                    <p>
+                                        <strong>Przód:</strong>{" "}
+                                        {vehicleData.frontWipers} mm
+                                    </p>
+
+                                    <p>
+                                        <strong>Tył:</strong>{" "}
+                                        {vehicleData.rearWiper} mm
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                ) : (
+
+                    <div
+                        style={{
+                            marginTop: "40px",
+                            maxWidth: "1200px",
+                            marginLeft: "auto",
+                            marginRight: "auto",
                             display: "grid",
                             gridTemplateColumns:
-                                "repeat(auto-fit, minmax(260px, 1fr))",
+                                "repeat(auto-fit, minmax(300px, 1fr))",
                             gap: "24px"
                         }}
                     >
-                        <div style={cardStyle}>
-                            <h3 style={titleStyle}>
-                                🚗 Pojazd
-                            </h3>
-
-                            <p>
-                                <strong>Marka:</strong>
-                                {" "}
-                                {vehicleData.brand}
-                            </p>
-
-                            <p>
-                                <strong>Model:</strong>
-                                {" "}
-                                {vehicleData.model}
-                            </p>
-
-                            <p>
-                                <strong>Generacja:</strong>
-                                {" "}
-                                {vehicleData.generation}
-                            </p>
-                        </div>
-
-                        {searchedCategory === "opony" && (
-                            <div style={cardStyle}>
+                        {Array.isArray(vehicleData) &&
+                            vehicleData.map((vehicle: any) => (
+                            <div
+                                key={vehicle._id}
+                                style={{
+                                    backgroundColor: "#1e293b",
+                                    padding: "24px",
+                                    borderRadius: "20px",
+                                    border: "1px solid #334155"
+                                }}
+                            >
                                 <h3 style={titleStyle}>
-                                    🛞 Opony
+                                    🚗 {vehicle.brand} {vehicle.model}
                                 </h3>
 
                                 <p>
-                                    <strong>Rozmiar:</strong>
-                                    {" "}
-                                    {vehicleData.tireSize}
+                                    <strong>Generacja:</strong>{" "}
+                                    {vehicle.generation}
                                 </p>
 
-                                <p>
-                                    <strong>Ciśnienie:</strong>
-                                    {" "}
-                                    {vehicleData.tirePressure} bar
-                                </p>
+                                {searchedCategory === "opony" && (
+                                    <>
+                                        <p>
+                                            <strong>Rozmiar opon:</strong>{" "}
+                                            {vehicle.tireSize}
+                                        </p>
+
+                                        <p>
+                                            <strong>Ciśnienie:</strong>{" "}
+                                            {vehicle.tirePressure} bar
+                                        </p>
+                                    </>
+                                )}
+
+                                {searchedCategory === "wycieraczki" && (
+                                    <>
+                                        <p>
+                                            <strong>Przód:</strong>{" "}
+                                            {vehicle.frontWipers} mm
+                                        </p>
+
+                                        <p>
+                                            <strong>Tył:</strong>{" "}
+                                            {vehicle.rearWiper} mm
+                                        </p>
+                                    </>
+                                )}
                             </div>
-                        )}
-
-                        {searchedCategory === "wycieraczki" && (
-                            <div style={cardStyle}>
-                                <h3 style={titleStyle}>
-                                    🧼 Wycieraczki
-                                </h3>
-
-                                <p>
-                                    <strong>Przód:</strong>
-                                    {" "}
-                                    {vehicleData.frontWipers} mm
-                                </p>
-
-                                <p>
-                                    <strong>Tył:</strong>
-                                    {" "}
-                                    {vehicleData.rearWiper} mm
-                                </p>
-                            </div>
-                        )}
+                        ))}
                     </div>
-                </div>
+                )
             )}
         </div>
     );

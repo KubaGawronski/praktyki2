@@ -167,6 +167,23 @@ app.put("/vehicle-data/:id", async (req, res) => {
     }
 });
 
+app.get("/vehicle-data/brand", async (req, res) => {
+    try {
+        const { brand } = req.query;
+
+        const vehicles = await VehicleData.find({
+            brand
+        });
+
+        res.json(vehicles);
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Błąd pobierania danych"
+        });
+    }
+});
+
 app.listen(3001, () => {
     console.log("Server 3001");
 });

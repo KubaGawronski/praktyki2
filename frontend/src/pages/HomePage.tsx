@@ -3,18 +3,42 @@ import axios from "axios";
 
 import { API_URL } from "../config/api";
 
+interface Brand {
+    _id: string;
+    name: string;
+}
+
+interface Model {
+    _id: string;
+    name: string;
+}
+
+interface Vehicle {
+    _id: string;
+    brand: string;
+    model: string;
+    generation: string;
+
+    tireSize?: string;
+    tirePressure?: string;
+
+    frontWipers?: string;
+    rearWiper?: string;
+}
+
 function HomePage() {
-    const [brands, setBrands] = useState([]);
-    const [models, setModels] = useState([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [models, setModels] = useState<Model[]>([]);
     const [selectedBrand, setSelectedBrand] = useState("");
     const [selectedModel, setSelectedModel] = useState("");
-    const [generations, setGenerations] = useState([]);
+    const [generations, setGenerations] = useState<string[]>([]);
     const [selectedGeneration, setSelectedGeneration] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
     const [searchedCategory, setSearchedCategory] = useState("");
-    const [vehicleData, setVehicleData] = useState<any>(null);
+    const [vehicleData, setVehicleData] =
+        useState<Vehicle | Vehicle[] | null>(null);
     const [selectedVehicle, setSelectedVehicle] =
-        useState<any>(null);
+        useState<Vehicle | null>(null);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -124,7 +148,7 @@ function HomePage() {
         setSearchSpecificModel(true);
     };
 
-    const getVehicleImage = (vehicle: any) => {
+    const getVehicleImage = (vehicle: Vehicle) => {
         return `https://cdn.imagin.studio/getimage?customer=img&make=${vehicle.brand}&modelFamily=${vehicle.model}&zoomType=fullscreen&width=1200`;
     };
 
@@ -209,7 +233,7 @@ function HomePage() {
                         Wybierz markę
                     </option>
 
-                    {brands.map((brand: any) => (
+                    {brands.map((brand: Brand) => (
                         <option
                             key={brand._id}
                             value={brand.name}
@@ -256,7 +280,7 @@ function HomePage() {
                             Wybierz model
                         </option>
 
-                        {models.map((model: any) => (
+                        {models.map((model: Model) => (
                             <option
                                 key={model._id}
                                 value={model.name}
@@ -375,9 +399,12 @@ function HomePage() {
                     {error}
                 </p>
             )}
-            {vehicleData && (
-                searchSpecificModel ? (
-
+            {loading && (
+                <div style={spinnerStyle}></div>
+            )}
+            {vehicleData &&
+                !Array.isArray(vehicleData) &&
+                searchSpecificModel && (
                     <div
                         style={{
                             marginTop: "40px",
@@ -468,87 +495,85 @@ function HomePage() {
                             )}
                         </div>
                     </div>
+                )}
 
-                ) : (
+            {Array.isArray(vehicleData) && (
+                <div
+                    style={{
+                        marginTop: "40px",
+                        maxWidth: "1200px",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        display: "grid",
+                        gridTemplateColumns:
+                            "repeat(auto-fit, minmax(300px, 1fr))",
+                        gap: "24px"
+                    }}
+                >
+                    {vehicleData.map((vehicle: Vehicle) => (
+                        <div
+                            key={vehicle._id}
+                            onClick={() => {
+                                setImageLoaded(false);
+                                setSelectedVehicle(vehicle);
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "scale(1.03)";
+                                e.currentTarget.style.borderColor = "#3b82f6";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "scale(1)";
+                                e.currentTarget.style.borderColor = "#334155";
+                            }}
+                            style={{
+                                backgroundColor: "#1e293b",
+                                padding: "24px",
+                                borderRadius: "20px",
+                                border: "1px solid #334155",
+                                cursor: "pointer",
+                                transition: "0.2s",
+                                transform: "scale(1)"
+                            }}
+                        >
+                            <h3 style={titleStyle}>
+                                🚗 {vehicle.brand} {vehicle.model}
+                            </h3>
 
-                    <div
-                        style={{
-                            marginTop: "40px",
-                            maxWidth: "1200px",
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                            display: "grid",
-                            gridTemplateColumns:
-                                "repeat(auto-fit, minmax(300px, 1fr))",
-                            gap: "24px"
-                        }}
-                    >
-                        {Array.isArray(vehicleData) &&
-                            vehicleData.map((vehicle: any) => (
-                                <div
-                                    key={vehicle._id}
-                                    onClick={() => {
-                                        setImageLoaded(false);
-                                        setSelectedVehicle(vehicle);
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = "scale(1.03)";
-                                        e.currentTarget.style.borderColor = "#3b82f6";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = "scale(1)";
-                                        e.currentTarget.style.borderColor = "#334155";
-                                    }}
-                                    style={{
-                                        backgroundColor: "#1e293b",
-                                        padding: "24px",
-                                        borderRadius: "20px",
-                                        border: "1px solid #334155",
-                                        cursor: "pointer",
-                                        transition: "0.2s",
-                                        transform: "scale(1)"
-                                    }}
-                                >
-                                <h3 style={titleStyle}>
-                                    🚗 {vehicle.brand} {vehicle.model}
-                                </h3>
+                            <p>
+                                <strong>Generacja:</strong>{" "}
+                                {vehicle.generation}
+                            </p>
 
-                                <p>
-                                    <strong>Generacja:</strong>{" "}
-                                    {vehicle.generation}
-                                </p>
+                            {searchedCategory === "opony" && (
+                                <>
+                                    <p>
+                                        <strong>Rozmiar opon:</strong>{" "}
+                                        {vehicle.tireSize}
+                                    </p>
 
-                                {searchedCategory === "opony" && (
-                                    <>
-                                        <p>
-                                            <strong>Rozmiar opon:</strong>{" "}
-                                            {vehicle.tireSize}
-                                        </p>
+                                    <p>
+                                        <strong>Ciśnienie:</strong>{" "}
+                                        {vehicle.tirePressure} bar
+                                    </p>
+                                </>
+                            )}
 
-                                        <p>
-                                            <strong>Ciśnienie:</strong>{" "}
-                                            {vehicle.tirePressure} bar
-                                        </p>
-                                    </>
-                                )}
+                            {searchedCategory === "wycieraczki" && (
+                                <>
+                                    <p>
+                                        <strong>Przód:</strong>{" "}
+                                        {vehicle.frontWipers} mm
+                                    </p>
 
-                                {searchedCategory === "wycieraczki" && (
-                                    <>
-                                        <p>
-                                            <strong>Przód:</strong>{" "}
-                                            {vehicle.frontWipers} mm
-                                        </p>
-
-                                        <p>
-                                            <strong>Tył:</strong>{" "}
-                                            {vehicle.rearWiper} mm
-                                        </p>
-                                    </>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                )
+                                    <p>
+                                        <strong>Tył:</strong>{" "}
+                                        {vehicle.rearWiper} mm
+                                    </p>
+                                </>
+                            )}
+                        </div>
+                    ))}
+                </div>
             )}
 
             {selectedVehicle && (
@@ -693,6 +718,16 @@ const titleStyle: React.CSSProperties = {
     marginTop: 0,
     marginBottom: "20px",
     fontSize: "24px"
+};
+
+const spinnerStyle: React.CSSProperties = {
+    width: "50px",
+    height: "50px",
+    border: "5px solid #334155",
+    borderTop: "5px solid #3b82f6",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+    margin: "40px auto"
 };
 
 export default HomePage;

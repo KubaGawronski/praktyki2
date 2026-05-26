@@ -13,6 +13,9 @@ function HomePage() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [searchedCategory, setSearchedCategory] = useState("");
     const [vehicleData, setVehicleData] = useState<any>(null);
+    const [selectedVehicle, setSelectedVehicle] =
+        useState<any>(null);
+    const [imageLoaded, setImageLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [searchSpecificModel, setSearchSpecificModel] = useState(true);
@@ -121,6 +124,10 @@ function HomePage() {
         setSearchSpecificModel(true);
     };
 
+    const getVehicleImage = (vehicle: any) => {
+        return `https://cdn.imagin.studio/getimage?customer=img&make=${vehicle.brand}&modelFamily=${vehicle.model}&zoomType=fullscreen&width=1200`;
+    };
+
     useEffect(() => {
         fetchBrands();
     }, []);
@@ -145,6 +152,10 @@ function HomePage() {
     }, [selectedModel]);
 
     useEffect(() => {
+        setVehicleData(null);
+        setSelectedVehicle(null);
+        setError("");
+
         if (!searchSpecificModel) {
             setSelectedModel("");
             setSelectedGeneration("");
@@ -474,15 +485,30 @@ function HomePage() {
                     >
                         {Array.isArray(vehicleData) &&
                             vehicleData.map((vehicle: any) => (
-                            <div
-                                key={vehicle._id}
-                                style={{
-                                    backgroundColor: "#1e293b",
-                                    padding: "24px",
-                                    borderRadius: "20px",
-                                    border: "1px solid #334155"
-                                }}
-                            >
+                                <div
+                                    key={vehicle._id}
+                                    onClick={() => {
+                                        setImageLoaded(false);
+                                        setSelectedVehicle(vehicle);
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = "scale(1.03)";
+                                        e.currentTarget.style.borderColor = "#3b82f6";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = "scale(1)";
+                                        e.currentTarget.style.borderColor = "#334155";
+                                    }}
+                                    style={{
+                                        backgroundColor: "#1e293b",
+                                        padding: "24px",
+                                        borderRadius: "20px",
+                                        border: "1px solid #334155",
+                                        cursor: "pointer",
+                                        transition: "0.2s",
+                                        transform: "scale(1)"
+                                    }}
+                                >
                                 <h3 style={titleStyle}>
                                     🚗 {vehicle.brand} {vehicle.model}
                                 </h3>
@@ -524,6 +550,132 @@ function HomePage() {
                     </div>
                 )
             )}
+
+            {selectedVehicle && (
+                <div
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "rgba(0,0,0,0.7)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        zIndex: 1000
+                    }}
+                    onClick={() => setSelectedVehicle(null)}
+                >
+                    <div
+                        style={{
+                            backgroundColor: "#1e293b",
+                            borderRadius: "24px",
+                            padding: "30px",
+                            width: "90%",
+                            maxWidth: "700px",
+                            color: "white",
+                            position: "relative"
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setSelectedVehicle(null)}
+                            style={{
+                                position: "absolute",
+                                top: "15px",
+                                right: "15px",
+                                background: "none",
+                                border: "none",
+                                color: "white",
+                                fontSize: "24px",
+                                cursor: "pointer"
+                            }}
+                        >
+                            ✕
+                        </button>
+
+                        {!imageLoaded && (
+                            <div
+                                style={{
+                                    width: "100%",
+                                    height: "350px",
+                                    borderRadius: "18px",
+                                    backgroundColor: "#334155",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginBottom: "24px"
+                                }}
+                            >
+                                Ładowanie zdjęcia...
+                            </div>
+                        )}
+
+                        <img
+                            src={getVehicleImage(selectedVehicle)}
+                            alt={`${selectedVehicle.brand} ${selectedVehicle.model}`}
+                            onLoad={() => setImageLoaded(true)}
+                            onError={(e) => {
+                                e.currentTarget.src =
+                                    "https://via.placeholder.com/1200x700?text=Brak+zdjecia";
+                            }}
+                            style={{
+                                width: "100%",
+                                borderRadius: "18px",
+                                marginBottom: "24px",
+                                maxHeight: "350px",
+                                objectFit: "cover",
+                                display: imageLoaded ? "block" : "none"
+                            }}
+                        />
+
+                        <h2
+                            style={{
+                                marginBottom: "20px",
+                                fontSize: "32px"
+                            }}
+                        >
+                            🚗 {selectedVehicle.brand}{" "}
+                            {selectedVehicle.model}
+                        </h2>
+
+                        <p>
+                            <strong>Generacja:</strong>{" "}
+                            {selectedVehicle.generation}
+                        </p>
+
+                        {searchedCategory === "opony" && (
+                            <>
+                                <p>
+                                    <strong>Rozmiar opon:</strong>{" "}
+                                    {selectedVehicle.tireSize}
+                                </p>
+
+                                <p>
+                                    <strong>Ciśnienie:</strong>{" "}
+                                    {selectedVehicle.tirePressure} bar
+                                </p>
+                            </>
+                        )}
+
+                        {searchedCategory === "wycieraczki" && (
+                            <>
+                                <p>
+                                    <strong>Przód:</strong>{" "}
+                                    {selectedVehicle.frontWipers} mm
+                                </p>
+
+                                <p>
+                                    <strong>Tył:</strong>{" "}
+                                    {selectedVehicle.rearWiper} mm
+                                </p>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }

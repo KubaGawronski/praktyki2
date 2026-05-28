@@ -136,9 +136,47 @@ app.get("/vehicle-data/all", async (req, res) => {
 
 app.delete("/vehicle-data/:id", async (req, res) => {
     try {
+        const vehicle =
+            await VehicleData.findById(req.params.id);
+
+        if (!vehicle) {
+            return res.status(404).json({
+                error: "Pojazd nie istnieje"
+            });
+        }
+
+        const {
+            brand,
+            model
+        } = vehicle;
+
         await VehicleData.findByIdAndDelete(
             req.params.id
         );
+
+        const existingModel =
+            await VehicleData.findOne({
+                brand,
+                model
+            });
+
+        if (!existingModel) {
+            await Model.findOneAndDelete({
+                brand,
+                name: model
+            });
+        }
+
+        const existingBrand =
+            await VehicleData.findOne({
+                brand
+            });
+
+        if (!existingBrand) {
+            await Brand.findOneAndDelete({
+                name: brand
+            });
+        }
 
         res.json({
             message: "Pojazd usunięty"

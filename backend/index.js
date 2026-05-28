@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const PDFDocument = require("pdfkit");
+const path = require("path");
 require("dotenv").config();
 
 const Brand = require("./models/Brand");
@@ -180,6 +182,119 @@ app.get("/vehicle-data/brand", async (req, res) => {
     } catch (err) {
         res.status(500).json({
             error: "Błąd pobierania danych"
+        });
+    }
+});
+
+app.get("/pdf", async (req, res) => {
+    try {
+        const {
+            brand,
+            model,
+            generation,
+            category
+        } = req.query;
+
+        let vehicles = [];
+
+        if (model && generation) {
+            const vehicle = await VehicleData.findOne({
+                brand,
+                model,
+                generation
+            });
+
+            if (vehicle) {
+                vehicles.push(vehicle);
+            }
+        } else {
+            vehicles = await VehicleData.find({
+                brand
+            });
+        }
+
+        const doc = new PDFDocument({
+            margin: 40,
+            size: "A4"
+        });
+
+        const regularFont = path.join(
+            __dirname,
+            "fonts",
+            "DejaVuSans.ttf"
+        );
+
+        doc.registerFont(
+            "Regular",
+            regularFont
+        );
+
+        res.setHeader(
+            "Content-Type",
+            "application/pdf"
+        );
+
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=raport.pdf"
+        );
+
+        doc.pipe(res);
+
+        doc
+            .font("Regular")
+            .fontSize(24)
+            .text("Raport pojazdów", {
+                align: "center"
+            });
+
+        doc.moveDown(2);
+
+        vehicles.forEach((vehicle) => {
+            doc
+                .fontSize(18)
+                .text(
+                    `${vehicle.brand} ${vehicle.model}`
+                );
+
+            doc.moveDown(0.5);
+
+            doc
+                .fontSize(12)
+                .text(
+                    `Generacja: ${vehicle.generation}`
+                );
+
+            if (category === "opony") {
+                doc.text(
+                    `Rozmiar opon: ${vehicle.tireSize || "-"}`
+                );
+
+                doc.text(
+                    `Ciśnienie: ${vehicle.tirePressure || "-"} bar`
+                );
+            }
+
+            if (category === "wycieraczki") {
+                doc.text(
+                    `Przód: ${vehicle.frontWipers || "-"} mm`
+                );
+
+                doc.text(
+                    `Tył: ${vehicle.rearWiper || "-"} mm`
+                );
+            }
+
+            doc.moveDown(2);
+        });
+
+        doc.end();
+
+    } catch (err) {
+        console.log(err);
+
+        res.status(500).json({
+            error: "Błąd generowania PDF"
         });
     }
 });

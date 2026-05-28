@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import { API_URL } from "../config/api";
 
 interface Brand {
@@ -154,96 +152,20 @@ function HomePage() {
     };
 
     const generatePDF = () => {
-        const doc = new jsPDF();
-
-        doc.setFontSize(22);
-
-        doc.text("Raport pojazdu", 14, 20);
+        let url =
+            `${API_URL}/pdf?brand=${selectedBrand}&category=${searchedCategory}`;
 
         if (
-            vehicleData &&
-            !Array.isArray(vehicleData)
+            searchSpecificModel &&
+            selectedModel &&
+            selectedGeneration
         ) {
-            doc.setFontSize(16);
-
-            doc.text(
-                `${vehicleData.brand} ${vehicleData.model}`,
-                14,
-                35
-            );
-
-            autoTable(doc, {
-                startY: 45,
-                head: [["Parametr", "Wartość"]],
-                body: [
-                    ["Marka", vehicleData.brand],
-                    ["Model", vehicleData.model],
-                    ["Generacja", vehicleData.generation],
-
-                    searchedCategory === "opony"
-                        ? [
-                            "Rozmiar opon",
-                            vehicleData.tireSize || "-"
-                        ]
-                        : [
-                            "Przód wycieraczek",
-                            vehicleData.frontWipers || "-"
-                        ],
-
-                    searchedCategory === "opony"
-                        ? [
-                            "Ciśnienie",
-                            `${vehicleData.tirePressure} bar`
-                        ]
-                        : [
-                            "Tył wycieraczki",
-                            vehicleData.rearWiper || "-"
-                        ]
-                ]
-            });
+            url +=
+                `&model=${selectedModel}` +
+                `&generation=${selectedGeneration}`;
         }
 
-        if (Array.isArray(vehicleData)) {
-            doc.setFontSize(16);
-
-            doc.text(
-                `Marka: ${selectedBrand}`,
-                14,
-                35
-            );
-
-            const tableData = vehicleData.map((vehicle): string[] => [
-                vehicle.brand || "-",
-                vehicle.model || "-",
-                vehicle.generation || "-",
-
-                searchedCategory === "opony"
-                    ? vehicle.tireSize || "-"
-                    : vehicle.frontWipers || "-",
-
-                searchedCategory === "opony"
-                    ? `${vehicle.tirePressure || "-"} bar`
-                    : vehicle.rearWiper || "-"
-            ]);
-
-            autoTable(doc, {
-                startY: 45,
-                head: [[
-                    "Marka",
-                    "Model",
-                    "Generacja",
-                    searchedCategory === "opony"
-                        ? "Rozmiar opon"
-                        : "Przód",
-                    searchedCategory === "opony"
-                        ? "Ciśnienie"
-                        : "Tył"
-                ]],
-                body: tableData as string[][]
-            });
-        }
-
-        doc.save("raport-pojazdu.pdf");
+        window.open(url, "_blank");
     };
 
     useEffect(() => {

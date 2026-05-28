@@ -241,52 +241,147 @@ app.get("/pdf", async (req, res) => {
 
         doc.pipe(res);
 
+        doc.rect(0, 0, doc.page.width, 90)
+            .fill("#1e293b");
+
         doc
+            .fillColor("white")
             .font("Regular")
-            .fontSize(24)
-            .text("Raport pojazdów", {
+            .fontSize(26)
+            .text("Raport pojazdów", 0, 30, {
                 align: "center"
             });
 
-        doc.moveDown(2);
+        doc.moveDown(4);
 
-        vehicles.forEach((vehicle) => {
+        const tableTop = 140;
+        const rowHeight = 35;
+
+        const columns =
+            category === "opony"
+                ? [
+                    "Marka",
+                    "Model",
+                    "Generacja",
+                    "Rozmiar opon",
+                    "Ciśnienie"
+                ]
+                : [
+                    "Marka",
+                    "Model",
+                    "Generacja",
+                    "Przód",
+                    "Tył"
+                ];
+
+        const columnWidths =
+            category === "opony"
+                ? [90, 90, 110, 120, 85]
+                : [90, 90, 110, 120, 85];
+
+        let currentX = 40;
+
+        columns.forEach((column, index) => {
             doc
-                .fontSize(18)
-                .text(
-                    `${vehicle.brand} ${vehicle.model}`
+                .rect(
+                    currentX,
+                    tableTop,
+                    columnWidths[index],
+                    rowHeight
+                )
+                .fillAndStroke(
+                    "#2563eb",
+                    "#1e40af"
                 );
 
-            doc.moveDown(0.5);
-
             doc
+                .fillColor("white")
                 .fontSize(12)
                 .text(
-                    `Generacja: ${vehicle.generation}`
+                    column,
+                    currentX + 8,
+                    tableTop + 10,
+                    {
+                        width: columnWidths[index] - 16,
+                        align: "center"
+                    }
                 );
 
-            if (category === "opony") {
-                doc.text(
-                    `Rozmiar opon: ${vehicle.tireSize || "-"}`
-                );
-
-                doc.text(
-                    `Ciśnienie: ${vehicle.tirePressure || "-"} bar`
-                );
-            }
-
-            if (category === "wycieraczki") {
-                doc.text(
-                    `Przód: ${vehicle.frontWipers || "-"} mm`
-                );
-
-                doc.text(
-                    `Tył: ${vehicle.rearWiper || "-"} mm`
-                );
-            }
-
-            doc.moveDown(2);
+            currentX += columnWidths[index];
         });
+
+        let currentY = tableTop + rowHeight;
+
+        vehicles.forEach((vehicle, index) => {
+            const rowColor =
+                index % 2 === 0
+                    ? "#f8fafc"
+                    : "#e2e8f0";
+
+            let rowX = 40;
+
+            const rowData =
+                category === "opony"
+                    ? [
+                        vehicle.brand,
+                        vehicle.model,
+                        vehicle.generation,
+                        vehicle.tireSize || "-",
+                        `${vehicle.tirePressure || "-"} bar`
+                    ]
+                    : [
+                        vehicle.brand,
+                        vehicle.model,
+                        vehicle.generation,
+                        `${vehicle.frontWipers || "-"} mm`,
+                        `${vehicle.rearWiper || "-"} mm`
+                    ];
+
+            rowData.forEach((data, i) => {
+                doc
+                    .rect(
+                        rowX,
+                        currentY,
+                        columnWidths[i],
+                        rowHeight
+                    )
+                    .fillAndStroke(
+                        rowColor,
+                        "#cbd5e1"
+                    );
+
+                doc
+                    .fillColor("#0f172a")
+                    .fontSize(11)
+                    .text(
+                        data,
+                        rowX + 6,
+                        currentY + 10,
+                        {
+                            width: columnWidths[i] - 12,
+                            align: "center"
+                        }
+                    );
+
+                rowX += columnWidths[i];
+            });
+
+            currentY += rowHeight;
+        });
+
+        doc.moveDown(2);
+
+        doc
+            .fillColor("#64748b")
+            .fontSize(10)
+            .text(
+                "Wygenerowano przez Vehicle Finder",
+                0,
+                currentY + 30,
+                {
+                    align: "center"
+                }
+            );
 
         doc.end();
 

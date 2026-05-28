@@ -231,6 +231,13 @@ function AdminPage() {
                             setBrand(e.target.value)
                         }
                         style={inputStyle}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = "#3b82f6";
+                        }}
+
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = "#334155";
+                        }}
                     />
 
                     <input
@@ -240,6 +247,13 @@ function AdminPage() {
                             setModel(e.target.value)
                         }
                         style={inputStyle}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = "#3b82f6";
+                        }}
+
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = "#334155";
+                        }}
                     />
 
                     <input
@@ -249,6 +263,13 @@ function AdminPage() {
                             setGeneration(e.target.value)
                         }
                         style={inputStyle}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = "#3b82f6";
+                        }}
+
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = "#334155";
+                        }}
                     />
 
                     <input
@@ -258,6 +279,13 @@ function AdminPage() {
                             setTireSize(e.target.value)
                         }
                         style={inputStyle}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = "#3b82f6";
+                        }}
+
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = "#334155";
+                        }}
                     />
 
                     <input
@@ -268,6 +296,13 @@ function AdminPage() {
                             setTirePressure(e.target.value)
                         }
                         style={inputStyle}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = "#3b82f6";
+                        }}
+
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = "#334155";
+                        }}
                     />
 
                     <input
@@ -277,6 +312,13 @@ function AdminPage() {
                             setFrontWipers(e.target.value)
                         }
                         style={inputStyle}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = "#3b82f6";
+                        }}
+
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = "#334155";
+                        }}
                     />
 
                     <input
@@ -287,21 +329,30 @@ function AdminPage() {
                             setRearWiper(e.target.value)
                         }
                         style={inputStyle}
+                        onFocus={(e) => {
+                            e.currentTarget.style.borderColor = "#3b82f6";
+                        }}
+
+                        onBlur={(e) => {
+                            e.currentTarget.style.borderColor = "#334155";
+                        }}
                     />
 
                     <button
                         style={{
-                            width: "100%",
-                            padding: "14px",
-                            borderRadius: "10px",
-                            border: "none",
-                            backgroundColor: "#2563eb",
-                            color: "white",
-                            fontSize: "16px",
-                            cursor: "pointer",
-                            transition: "0.2s",
-                            fontWeight: "bold",
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
+                            ...buttonStyle,
+                            backgroundColor: editingId
+                                ? "#f59e0b"
+                                : "#2563eb"
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "scale(1.02)";
+                            e.currentTarget.style.opacity = "0.9";
+                        }}
+
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.opacity = "1";
                         }}
                         onClick={
                             editingId
@@ -318,15 +369,17 @@ function AdminPage() {
                         <button
                             onClick={cancelEditing}
                             style={{
-                                width: "100%",
-                                padding: "14px",
-                                borderRadius: "10px",
-                                border: "none",
-                                backgroundColor: "#475569",
-                                color: "white",
-                                fontSize: "16px",
-                                cursor: "pointer",
-                                fontWeight: "bold"
+                                ...buttonStyle,
+                                backgroundColor: "#475569"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "scale(1.02)";
+                                e.currentTarget.style.opacity = "0.9";
+                            }}
+
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "scale(1)";
+                                e.currentTarget.style.opacity = "1";
                             }}
                         >
                             Anuluj
@@ -389,7 +442,17 @@ function AdminPage() {
                                 padding: "30px",
                                 borderRadius: "22px",
                                 border: "1px solid #334155",
-                                boxShadow: "0 6px 18px rgba(0,0,0,0.3)"
+                                boxShadow: "0 6px 18px rgba(0,0,0,0.3)",
+                                transition: "all 0.2s ease"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-4px)";
+                                e.currentTarget.style.borderColor = "#3b82f6";
+                            }}
+
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.borderColor = "#334155";
                             }}
                         >
                             <p
@@ -473,18 +536,18 @@ function AdminPage() {
                                     deleteVehicle(vehicle._id)
                                 }
                                 style={{
-                                    marginTop: "15px",
-                                    width: "100%",
-                                    padding: "12px",
-                                    borderRadius: "10px",
-                                    border: "none",
+                                    ...buttonStyle,
                                     backgroundColor: "#ef4444",
-                                    color: "white",
-                                    fontSize: "16px",
-                                    cursor: "pointer",
-                                    transition: "0.2s",
-                                    fontWeight: "bold",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
+                                    marginTop: "15px"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = "scale(1.02)";
+                                    e.currentTarget.style.opacity = "0.9";
+                                }}
+
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = "scale(1)";
+                                    e.currentTarget.style.opacity = "1";
                                 }}
                             >
                                 Usuń pojazd
@@ -494,18 +557,18 @@ function AdminPage() {
                                     editVehicle(vehicle)
                                 }
                                 style={{
-                                    marginTop: "10px",
-                                    width: "100%",
-                                    padding: "12px",
-                                    borderRadius: "10px",
-                                    border: "none",
+                                    ...buttonStyle,
                                     backgroundColor: "#f59e0b",
-                                    color: "white",
-                                    fontSize: "16px",
-                                    cursor: "pointer",
-                                    transition: "0.2s",
-                                    fontWeight: "bold",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
+                                    marginTop: "10px"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = "scale(1.02)";
+                                    e.currentTarget.style.opacity = "0.9";
+                                }}
+
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = "scale(1)";
+                                    e.currentTarget.style.opacity = "1";
                                 }}
                             >
                                 Edytuj pojazd
@@ -527,7 +590,21 @@ const inputStyle: React.CSSProperties = {
     fontSize: "16px",
     boxSizing: "border-box",
     backgroundColor: "#0f172a",
-    color: "white"
+    color: "white",
+    transition: "0.2s"
+};
+
+const buttonStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "none",
+    color: "white",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    fontWeight: "bold",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
 };
 
 export default AdminPage;

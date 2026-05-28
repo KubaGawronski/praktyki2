@@ -237,13 +237,7 @@ function HomePage() {
                     onChange={(e) =>
                         setSelectedBrand(e.target.value)
                     }
-                    style={{
-                        width: "100%",
-                        padding: "14px",
-                        borderRadius: "10px",
-                        border: "none",
-                        fontSize: "16px"
-                    }}
+                    style={selectStyle}
                 >
                     <option value="">
                         Wybierz markę
@@ -283,13 +277,7 @@ function HomePage() {
                         onChange={(e) =>
                             setSelectedModel(e.target.value)
                         }
-                        style={{
-                            width: "100%",
-                            padding: "14px",
-                            borderRadius: "10px",
-                            border: "none",
-                            fontSize: "16px"
-                        }}
+                        style={selectStyle}
                         disabled={!selectedBrand}
                     >
                         <option value="">
@@ -312,13 +300,7 @@ function HomePage() {
                         onChange={(e) =>
                             setSelectedGeneration(e.target.value)
                         }
-                        style={{
-                            width: "100%",
-                            padding: "14px",
-                            borderRadius: "10px",
-                            border: "none",
-                            fontSize: "16px"
-                        }}
+                        style={selectStyle}
                         disabled={!selectedModel}
                     >
                         <option value="">
@@ -340,13 +322,7 @@ function HomePage() {
                     onChange={(e) =>
                         setSelectedCategory(e.target.value)
                     }
-                    style={{
-                        width: "100%",
-                        padding: "14px",
-                        borderRadius: "10px",
-                        border: "none",
-                        fontSize: "16px"
-                    }}
+                    style={selectStyle}
                     disabled={
                         !selectedBrand ||
                         (
@@ -371,14 +347,17 @@ function HomePage() {
                 <button
                     onClick={fetchVehicleData}
                     style={{
-                        width: "100%",
-                        padding: "14px",
-                        borderRadius: "10px",
-                        border: "none",
-                        backgroundColor: "#2563eb",
-                        color: "white",
-                        fontSize: "16px",
-                        cursor: "pointer"
+                        ...buttonStyle,
+                        backgroundColor: "#2563eb"
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "scale(1.02)";
+                        e.currentTarget.style.opacity = "0.9";
+                    }}
+
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.opacity = "1";
                     }}
                     disabled={loading}
                 >
@@ -388,14 +367,17 @@ function HomePage() {
                 <button
                     onClick={resetForm}
                     style={{
-                        width: "100%",
-                        padding: "14px",
-                        borderRadius: "10px",
-                        border: "none",
-                        backgroundColor: "#ef4444",
-                        color: "white",
-                        fontSize: "16px",
-                        cursor: "pointer"
+                        ...buttonStyle,
+                        backgroundColor: "#ef4444"
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "scale(1.02)";
+                        e.currentTarget.style.opacity = "0.9";
+                    }}
+
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.opacity = "1";
                     }}
                 >
                     Resetuj
@@ -453,7 +435,17 @@ function HomePage() {
                                 gap: "24px"
                             }}
                         >
-                            <div style={cardStyle}>
+                            <div
+                                style={cardStyle}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = "translateY(-4px)";
+                                    e.currentTarget.style.borderColor = "#3b82f6";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = "translateY(0)";
+                                    e.currentTarget.style.borderColor = "#334155";
+                                }}
+                            >
                                 <h3 style={titleStyle}>
                                     🚗 Pojazd
                                 </h3>
@@ -475,7 +467,17 @@ function HomePage() {
                             </div>
 
                             {searchedCategory === "opony" && (
-                                <div style={cardStyle}>
+                                <div
+                                    style={cardStyle}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = "translateY(-4px)";
+                                        e.currentTarget.style.borderColor = "#3b82f6";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = "translateY(0)";
+                                        e.currentTarget.style.borderColor = "#334155";
+                                    }}
+                                >
                                     <h3 style={titleStyle}>
                                         🛞 Opony
                                     </h3>
@@ -493,7 +495,17 @@ function HomePage() {
                             )}
 
                             {searchedCategory === "wycieraczki" && (
-                                <div style={cardStyle}>
+                                <div
+                                    style={cardStyle}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = "translateY(-4px)";
+                                        e.currentTarget.style.borderColor = "#3b82f6";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = "translateY(0)";
+                                        e.currentTarget.style.borderColor = "#334155";
+                                    }}
+                                >
                                     <h3 style={titleStyle}>
                                         🧼 Wycieraczki
                                     </h3>
@@ -510,6 +522,26 @@ function HomePage() {
                                 </div>
                             )}
                         </div>
+                        <button
+                            onClick={generatePDF}
+                            style={{
+                                ...buttonStyle,
+                                backgroundColor: "#22c55e",
+                                gridColumn: "1 / -1",
+                                marginTop: "30px"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "scale(1.02)";
+                                e.currentTarget.style.opacity = "0.9";
+                            }}
+
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "scale(1)";
+                                e.currentTarget.style.opacity = "1";
+                            }}
+                        >
+                            Generuj PDF
+                        </button>
                     </div>
                 )}
 
@@ -592,16 +624,19 @@ function HomePage() {
                     <button
                         onClick={generatePDF}
                         style={{
-                            marginTop: "30px",
-                            width: "100%",
-                            padding: "14px",
-                            borderRadius: "10px",
-                            border: "none",
+                            ...buttonStyle,
                             backgroundColor: "#22c55e",
-                            color: "white",
-                            fontSize: "16px",
-                            cursor: "pointer",
-                            gridColumn: "1 / -1"
+                            gridColumn: "1 / -1",
+                            marginTop: "30px"
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "scale(1.02)";
+                            e.currentTarget.style.opacity = "0.9";
+                        }}
+
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.opacity = "1";
                         }}
                     >
                         Generuj PDF
@@ -744,7 +779,9 @@ const cardStyle: React.CSSProperties = {
     borderRadius: "18px",
     border: "1px solid #334155",
     fontSize: "17px",
-    lineHeight: "1.8"
+    lineHeight: "1.8",
+    transition: "all 0.2s ease",
+    cursor: "default"
 };
 
 const titleStyle: React.CSSProperties = {
@@ -761,6 +798,29 @@ const spinnerStyle: React.CSSProperties = {
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
     margin: "40px auto"
+};
+
+const buttonStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "none",
+    color: "white",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "all 0.2s ease"
+};
+
+const selectStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "1px solid #334155",
+    fontSize: "16px",
+    backgroundColor: "#0f172a",
+    color: "white",
+    outline: "none",
+    transition: "0.2s"
 };
 
 export default HomePage;
